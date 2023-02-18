@@ -5,7 +5,7 @@
 
 ## How to Use
 
-The main function in this library is `Trace(startpos, endpos, ignoremask=null, filter=false)`, which takes in two arguments, `startpos` and `endpos`, representing the start and end points of the trace. There are two optional parameters, `ignoremask`, which allow for fine-tuning of the trace.
+The main function in this library is `Trace(startpos, endpos, ignoremask=null, filter=false)`, which takes in two arguments, `startpos` and `endpos`, representing the start and end points of the trace. There are optional parameters, `ignoremask`, which allow for fine-tuning of the trace.
 
 The function returns an array containing two elements, `[hitpos, ent]`, where **hitpos** is the position where the trace ended and **ent** is the entity it collided with. If the trace didn't collide with anything, **ent** will be set to null.
 
@@ -19,4 +19,4 @@ There are several settings that can be adjusted to fine-tune the trace, located 
 
 ## License
 
-Protected by the MIT license. Credits: required when used _(as laVashik)_
+Protected by the MIT license. Credits: required _(as laVashik)_
