@@ -1,22 +1,58 @@
-# VScripts Library for TraceLine with Entity Support in Portal 2
+<div align="center">
+<img src="other\logo.png" alt="Logo" width="150" height="150">
 
- This repository contains a VScripts library for TraceLine with entity support in Portal 2. This library enables the ray to hit entities by using their bbox, in contrast to the regular *traceline()* function which ignores entities and only hits world geometry.
+<h2 align="center">
+    BBoxCast - VScripts Library for BBox-based Ray Tracing in Portal 2
+</h2>
+</div>
+
+<!-- # BBoxCast - VScripts Library for BBox-based Ray Tracing in Portal 2 -->
+
+BBoxCast is a VScripts library for performing BBox-based ray tracing in Portal 2. It allows rays to hit entities by using their bounding boxes (BBox), unlike the regular `traceline()` function that only hits world geometry and ignores entities. This library provides enhanced TraceLine capabilities for custom gameplay mechanics, or any vscripts involving ray-based interactions in the Portal 2 environment.
+
+## Usage
+
+To use the BBoxCast library in your VScript:
+
+1. Include the `bboxcast.nut` file in your VScript.
+2. Create an instance of the `bboxcast` class by providing the following parameters:
+   - `startpos`: the starting position of the ray.
+   - `endpos`: the ending position of the ray.
+   - `ignoremask` (optional): an array of entities to be ignored during tracing.
+   - `settings` (optional): custom settings for the trace, if any.
+3. Utilize the available methods of the `bboxcast` instance to retrieve trace information:
+   - `GetStartPos()`: returns the starting position of the ray.
+   - `GetEndPos()`: returns the ending position of the ray.
+   - `GetHitpos()`: returns the position where the ray hit an entity.
+   - `GetEntity()`: returns the entity that was hit by the ray.
+   - `DidHit()`: checks if the ray hit any object or entity.
+   - `DidHitWorld()`: checks if the ray hit the world (no entity).
+   - `GetFraction()`: returns the fraction of the ray's path that was traversed before hitting an entity.
+
+## Customization
+
+The BBoxCast library allows you to customize the tracing process by modifying the `settings` parameter. The available settings include:
+- `ignoreClass`: an array of classnames that should be ignored during tracing.
+- `priorityClass`: an array of classnames that should be prioritized and not ignored, even if they match the ignored classnames.
+- `ErrorCoefficient`: a coefficient that affects the precision of the tracing process.
+
+To apply custom trace settings, simply pass a custom `settings` object when creating an instance of the `bboxcast` class.
+
+## Roadmap
+
+These are the planned improvements for the bboxcast library:
+- [ ] Addition of a function to retrieve surface normals.
+- [ ] Calculation of angle of incidence for ray collisions.
+- [ ] Support for `prop_portal` and `linked_portal_door`.
 
 
-## How to Use
+## Example
 
-The main function in this library is `Trace(startpos, endpos, ignoremask=null, filter=false)`, which takes in two arguments, `startpos` and `endpos`, representing the start and end points of the trace. There are optional parameters, `ignoremask`, which allow for fine-tuning of the trace.
-
-The function returns an array containing two elements, `[hitpos, ent]`, where **hitpos** is the position where the trace ended and **ent** is the entity it collided with. If the trace didn't collide with anything, **ent** will be set to null.
-
-## Settings
-There are several settings that can be adjusted to fine-tune the trace, located at the top of the script:
-
-- `Trace_IgnoreClass`: An array of entities to ignore. Can be specified as a mask, for example (trigger_) will ignore all triggers.
-- `Trace_PriorityClass`: An array of entities that take priority over Trace_IgnoreClass.
-- `traceErrorCoefficient`: The larger the value, the more accurate the trace but the higher the load.
+To see the BBoxCast library in action, refer to the included example script `test.nut` and the corresponding test map. The example demonstrates how to perform BBox-based ray tracing using the BBoxCast library.
 
 
-## License
+## Credit
 
-Protected by the MIT license. Credits: required _(as laVashik)_
+The BBoxCast library was created by laVashik. Please give credit to laVashik when using this library in your projects :>
+
+Protected by the MIT license.
