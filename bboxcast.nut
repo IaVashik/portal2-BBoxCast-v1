@@ -25,6 +25,7 @@
     4. Alternatively, you can directly modify the bboxcast class to suit your specific needs.
 */
 
+local Version = "1.2.0"
 ::defaulSettings <- {
     ignoreClass = ["info_target", "viewmodel", "weapon_", "func_illusionary", "info_particle_system",
     "trigger_", "phys_", "env_sprite", "point_", "vgui", "physicsclonearea", "env_beam", "func_breakable"],
@@ -155,4 +156,4 @@ class bboxcast {
     }
 }
 
-printl("bboxcast successfully initialized\nAuthor: laVashik\nGitHub: https://github.com/IaVashik")
+printl("===================================\nbboxcast successfully initialized\nAuthor: laVashik\nGitHub: https://github.com/IaVashik\nVersion: " + Version + "\n===================================")
