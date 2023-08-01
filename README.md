@@ -48,11 +48,11 @@ These are the planned improvements for the bboxcast library:
 
 ## Example
 
-To see the BBoxCast library in action, refer to the included example script `test.nut` and the corresponding test map. The example demonstrates how to perform BBox-based ray tracing using the BBoxCast library.
+To see the BBoxCast library in action, refer to the included example script `example.nut` and the corresponding test map. The example demonstrates how to perform BBox-based ray tracing using the BBoxCast library.
 
 
 ## Credit
 
-The BBoxCast library was created by laVashik. Please give credit to laVashik when using this library in your projects :>
+The BBoxCast library was created by <a href="https://www.youtube.com/@laVashikProductions">laVashik</a>. Please give credit to laVashik when using this library in your projects :>
 
 Protected by the MIT license.
