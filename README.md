@@ -10,6 +10,23 @@
 
 BBoxCast is a VScripts library for performing BBox-based ray tracing in Portal 2. It allows rays to hit entities by using their bounding boxes (BBox), unlike the regular `traceline()` function that only hits world geometry and ignores entities. This library provides enhanced TraceLine capabilities for custom gameplay mechanics, or any vscripts involving ray-based interactions in the Portal 2 environment.
 
+## Comparison with TraceLine()
+
+| Feature                          | bboxcast()                                               | TraceLine()                                              |
+|:---------------------------------|:--------------------------------------------------------:|:--------------------------------------------------------:|
+| Hits world geometry              | ✔️                                                       | ✔️                                                        |
+| Hits entities                    | ✔️                                                       | ❌                                                        |
+| Returns hit position             | ✔️                                                       | ❌                                                        |
+| Returns hit entity               | ✔️                                                       | ❌                                                        |
+| Determines if hit occurred       | ✔️                                                       | ✔️                                                        |
+| Determines if hit was in world   | ✔️                                                       | ❌                                                        |
+| Returns fraction traversed       | ✔️                                                       | ✔️                                                        |
+| Customization                    | ✔️                                                       | ❌                                                        |
+| Allows specifying multiple objects to ignore           | ✔️                                                      | ❌                                                      |
+| Allows hitting objects that cannot have collisions (like Triggers)     | ✔️                                                      | ❌                                                      |
+| Supports tracing through portals                       | ❌ (Rn unavailable)                                     | ❌                                                      |
+| Cost                             | Higher                                                   | Lower                                                   |
+
 ## Usage
 
 To use the BBoxCast library in your VScript:
