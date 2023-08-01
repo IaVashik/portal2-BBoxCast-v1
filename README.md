@@ -1,5 +1,5 @@
 <div align="center">
-<img src="other\logo.png" alt="Logo" width="150" height="150">
+<img src="other\logo.png" alt="Logo" width="350" height="350">
 
 <h2 align="center">
     BBoxCast - VScripts Library for BBox-based Ray Tracing in Portal 2
