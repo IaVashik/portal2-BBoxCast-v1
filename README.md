@@ -50,6 +50,7 @@ These are the planned improvements for the bboxcast library:
 
 To see the BBoxCast library in action, refer to the included example script `example.nut` and the corresponding test map. The example demonstrates how to perform BBox-based ray tracing using the BBoxCast library.
 
+<img src="other\screenshot.png">
 
 ## Credit
 
