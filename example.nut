@@ -1,5 +1,12 @@
 IncludeScript("portal2-BBoxCast/bboxcast.nut")
 
+customSettings <- {
+    // ignoreClass = ["trigger_", ...],
+    // The ignoreClass setting accepts a mask for ignoring entities. Since we want to ignore all triggers with "trigger_",
+    // we need to utilize the priorityClass setting to ensure that the ray still hits "trigger_portal_cleanser".
+    priorityClass = ["trigger_portal_cleanser"]
+}
+
 // Function to print trace information
 function PrintTraceInfo(trace)
 {
@@ -18,8 +25,8 @@ function TestRay()
     local startpos = EntityGroup[0].GetOrigin()
     local endpos = EntityGroup[1].GetOrigin()
 
-    // Perform bboxcast trace from startpos to endpos
-    local bboxTrace = bboxcast(startpos, endpos)
+    // Perform bboxcast trace from startpos to endpos, without custom settings
+    local bboxTrace = bboxcast(startpos, endpos) 
     
     // Print trace information
     PrintTraceInfo(bboxTrace)
@@ -50,8 +57,8 @@ function TestRayLoop(time = null)
     if (abs(Time()) == time)
         return
 
-    // Perform bboxcast trace from startpos to endpos
-    local bboxTrace = bboxcast(startpos, endpos)
+    // Perform bboxcast trace from startpos to endpos, with custom settings
+    local bboxTrace = bboxcast(startpos, endpos, null, customSettings)
     
     // Print trace information
     PrintTraceInfo(bboxTrace)
@@ -71,5 +78,3 @@ function TestRayLoop(time = null)
     // Schedule the next iteration of the loop
     EntFireByHandle(self, "runscriptcode", "TestRayLoop(" + time + ")", FrameTime(), null, null)
 }
-
-SendToConsole("sv_alternateticks 0")
