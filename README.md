@@ -45,12 +45,20 @@ To use the BBoxCast library in your VScript:
    - `DidHit()`: checks if the ray hit any object or entity.
    - `DidHitWorld()`: checks if the ray hit the world (no entity).
    - `GetFraction()`: returns the fraction of the ray's path that was traversed before hitting an entity.
+4. Remember to correctly disable objects using the following steps:
+   - Use the `CorrectDisable()` function to set the size of the entity to (0, 0, 0) and disable it.
+   - To re-enable a previously disabled entity, use the `CorrectEnable()` function to restore its original size 
+
+<div align="center">
+<img src="other\DisablingObjects.png" width="400" height="400">
+<p>Usage example from bboxcast_example.vmf</p>
+</div>
 
 ## Customization
 
-The BBoxCast library allows you to customize the tracing process by modifying the `settings` parameter. The available settings include:
-- `ignoreClass`: an array of classnames that should be ignored during tracing.
-- `priorityClass`: an array of classnames that should be prioritized and not ignored, even if they match the ignored classnames.
+The bboxcast library allows you to customize the tracing process by modifying the `settings` parameter. The available settings include:
+- `ignoreClass`: an array of class names that should be ignored during tracing.
+- `priorityClass`: an array of class names that should be prioritized and not ignored, even if they match the ignored class names.
 - `ErrorCoefficient`: a coefficient that affects the precision of the tracing process.
 
 To apply custom trace settings, simply pass a custom `settings` object when creating an instance of the `bboxcast` class.
