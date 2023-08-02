@@ -25,7 +25,7 @@
     4. Alternatively, you can directly modify the bboxcast class to suit your specific needs.
 */
 
-local Version = "1.2.0"
+local Version = "1.2.2"
 ::defaulSettings <- {
     ignoreClass = ["info_target", "viewmodel", "weapon_", "func_illusionary", "info_particle_system",
     "trigger_", "phys_", "env_sprite", "point_", "vgui", "physicsclonearea", "env_beam", "func_breakable"],
@@ -46,7 +46,7 @@ class bboxcast {
         this.startpos = startpos;
         this.endpos = endpos;
         this.ignoremask = ignoremask
-        this.traceSettings = settings
+        this.traceSettings = _checkSettings(settings)
         Trace(startpos, endpos, ignoremask)
     }
 
@@ -150,10 +150,54 @@ class bboxcast {
         return (start - end).Length()
     }
 
+    function _checkSettings(settings) {
+        // Check if settings is already in the correct format
+        if (settings.length() == 3)
+            return settings
+        
+        // Check and assign default values if missing
+        if (!("ignoreClass" in settings)) {
+            settings["ignoreClass"] = ::defaulSettings["ignoreClass"]
+        }
+        if (!("priorityClass" in settings)) {
+            settings["priorityClass"] = ::defaulSettings["priorityClass"]
+        }   
+        if (!("ErrorCoefficient" in settings)) {
+            settings["ErrorCoefficient"] = ::defaulSettings["ErrorCoefficient"]
+        }
+
+        return settings
+    }
+
     // Convert the bboxcast object to string representation
     function _tostring() {
         return "Bboxcast | \nstartpos: " + startpos + ", \nendpos: " + endpos + ", \nhitpos: " + traceResult[0] + ", \nent: " + traceResult[1] + "\n========================================================="
     }
 }
+
+// Store disabled entities' bounding boxes
+disabled_entity <- {}
+
+// Disable an entity by setting its size to (0, 0, 0)
+function CorrectDisable() {
+    EntFireByHandle(caller, "Disable", "", 0, null, null)
+    local entIndex = caller.entindex.tostring()
+    if( !(entIndex in disabled_entity)) {
+        disabled_entity[entIndex] <- {min = caller.GetBoundingMins(), max = caller.GetBoundingMaxs()}
+    }
+    caller.SetSize(Vector(0, 0, 0), Vector(0, 0, 0))
+}
+
+// Enable a previously disabled entity and restore its original size
+function CorrectEnable() {
+    EntFireByHandle(caller, "Enable", "", 0, null, null)
+    local entIndex = caller.entindex.tostring()
+    if( entIndex in disabled_entity ) {
+        local BBox = disabled_entity[entIndex]
+        caller.SetSize(BBox.min, BBox.max)
+    }
+    
+}
+
 
 printl("===================================\nbboxcast successfully initialized\nAuthor: laVashik\nGitHub: https://github.com/IaVashik\nVersion: " + Version + "\n===================================")
