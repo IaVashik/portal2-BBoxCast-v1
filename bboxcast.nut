@@ -196,7 +196,6 @@ function CorrectEnable() {
         local BBox = disabled_entity[entIndex]
         caller.SetSize(BBox.min, BBox.max)
     }
-    
 }
 
 

@@ -56,9 +56,9 @@ To use the BBoxCast library in your VScript:
 
 ## Customization
 
-The bboxcast library allows you to customize the tracing process by modifying the `settings` parameter. The available settings include:
-- `ignoreClass`: an array of class names that should be ignored during tracing.
-- `priorityClass`: an array of class names that should be prioritized and not ignored, even if they match the ignored class names.
+The BBoxCast library allows you to customize the tracing process by modifying the `settings` parameter. The available settings include:
+- `ignoreClass`: an array of classnames that should be ignored during tracing.
+- `priorityClass`: an array of classnames that should be prioritized and not ignored, even if they match the ignored classnames.
 - `ErrorCoefficient`: a coefficient that affects the precision of the tracing process.
 
 To apply custom trace settings, simply pass a custom `settings` object when creating an instance of the `bboxcast` class.
