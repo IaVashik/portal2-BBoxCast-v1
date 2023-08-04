@@ -63,6 +63,12 @@ The BBoxCast library allows you to customize the tracing process by modifying th
 
 To apply custom trace settings, simply pass a custom `settings` object when creating an instance of the `bboxcast` class.
 
+Additionally, a new function `TracePlayerEyes` has been added, which allows you to perform a bboxcast trace from the player's eyes. This function takes a distance parameter, an ignore entity (optional), and custom settings (optional).
+```lua
+local trace = bboxcast.TracePlayerEyes(1000, null, customSettings);
+```
+For more information, see [playerTraceExample.nut](Examples/playerTraceExample.nut)
+
 ## Roadmap
 
 These are the planned improvements for the bboxcast library:
@@ -73,7 +79,7 @@ These are the planned improvements for the bboxcast library:
 
 ## Example
 
-To see the BBoxCast library in action, refer to the included example script `example.nut` and the corresponding test map. The example demonstrates how to perform BBox-based ray tracing using the BBoxCast library.
+To see the BBoxCast library in action, refer to the included example script [example.nut](Examples/example.nut) and the corresponding test map. The example demonstrates how to perform BBox-based ray tracing using the BBoxCast library.
 
 <img src="other\screenshot.png">
 

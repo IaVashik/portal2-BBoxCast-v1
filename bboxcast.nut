@@ -12,7 +12,7 @@
     2. Create an instance of the bboxcast class by providing the following parameters:
        - startpos: the starting position of the ray
        - endpos: the ending position of the ray
-       - ignoremask (optional): an array of entities to be ignored during tracing
+       - ignoreEnt (optional): an array of entities to be ignored during tracing
        - settings (optional): custom settings for the trace, if any
     3. Use the various methods of the bboxcast instance to retrieve trace information:
        - GetStartPos(): returns the starting position of the ray
@@ -37,17 +37,17 @@ local Version = "1.2.2"
 class bboxcast {
     startpos = null;
     endpos = null;
-    ignoremask = null;
+    hitpos = null;
+    hitent = null;
+    ignoreEnt = null;
     traceSettings = null;
 
-    traceResult = null;
-
-    constructor(startpos, endpos, ignoremask = null, settings = ::defaulSettings) {
+    constructor(startpos, endpos, ignoreEnt = null, settings = ::defaulSettings) {
         this.startpos = startpos;
         this.endpos = endpos;
-        this.ignoremask = ignoremask
+        this.ignoreEnt = ignoreEnt
         this.traceSettings = _checkSettings(settings)
-        Trace(startpos, endpos, ignoremask)
+        this.Trace(startpos, endpos, ignoreEnt)
     }
 
     // Get the starting position of the ray
@@ -62,12 +62,12 @@ class bboxcast {
 
     // Get the position where the ray hit
     function GetHitpos() {
-        return traceResult[0]
+        return hitpos
     }
 
     // Get the entity that was hit by the ray
     function GetEntity() {
-        return traceResult[1]
+        return hitent
     }
 
     // Check if the ray hit any object or entity
@@ -77,12 +77,12 @@ class bboxcast {
 
     // Check if the ray hit the world (no entity)
     function DidHitWorld() {
-        return (!traceResult[1] && DidHit())
+        return (!hitent && DidHit())
     }
 
     // Get the fraction of the ray's path that was traversed before hitting an entity
     function GetFraction() {
-        return _GetDist(startpos, traceResult[0]) / _GetDist(startpos, endpos)
+        return _GetDist(startpos, hitpos) / _GetDist(startpos, endpos)
     }
 
     // Internal function
@@ -91,7 +91,7 @@ class bboxcast {
     }
 
     // Perform the main trace by iterating through steps and checking for entities
-    function Trace(startpos, endpos, ignoremask) {
+    function Trace(startpos, endpos, ignoreEnt) {
         // Get the hit position from the fast trace
         local hitpos = FastTraceEnd(startpos, endpos)
         // Calculate the distance between start and hit positions
@@ -107,16 +107,50 @@ class bboxcast {
             local Ray_part = startpos + dist * (i / step)
             // Find the entity at the ray point
             for (local ent;ent = Entities.FindByClassnameWithin(ent, "*", Ray_part, 5 * dist_coeff);) {
-                if (_checkEntityIsIgnored(ent,ignoremask) && ent) 
-                    return traceResult = [Ray_part, ent]
+                if (_checkEntityIsIgnored(ent,ignoreEnt) && ent) {
+                    this.hitpos = Ray_part
+                    this.hitent = ent
+                    return
+                }
             }
         }
 
-        return traceResult = [hitpos, null] 
+        this.hitpos = hitpos
+        this.hitent = null
+    }
+
+    // Perform a bboxcast trace from the player's eyes
+    function TracePlayerEyes(distance, ignoreEnt = null, settings = ::defaulSettings) {
+        // Get the player's eye position and forward direction
+        local eyePosition = ::eyePointEntity.GetOrigin()
+        local eyeDirection = ::eyePointEntity.GetForwardVector()
+
+        // Calculate the start and end positions of the trace
+        local startpos = eyePosition
+        local endpos = eyePosition + eyeDirection * distance
+
+        // Check if any entities should be ignored during the trace
+        if (ignoreEnt) {
+            // If ignoreEnt is an array, append the player entity to it
+            if (type(ignoreEnt) == "array") {
+                ignoreEnt.append(GetPlayer())
+            }
+            // If ignoreEnt is a single entity, create a new array with both the player and ignoreEnt
+            else {
+                ignoreEnt = [GetPlayer(), ignoreEnt]
+            }
+        }
+        // If no ignoreEnt is provided, ignore the player only
+        else {
+            ignoreEnt = GetPlayer()
+        }
+
+        // Perform the bboxcast trace and return the trace result
+        return bboxcast(startpos, endpos, ignoreEnt, settings)
     }
 
     // Check if an entity should be ignored based on the provided settings
-    function _checkEntityIsIgnored(ent, ignoremask) {
+    function _checkEntityIsIgnored(ent, ignoreEnt) {
         foreach (ignore in traceSettings.ignoreClass) {
             if (ent.GetClassname().find(ignore) >= 0) {
                 local isPriority = false;
@@ -132,13 +166,13 @@ class bboxcast {
             }
         }
 
-        if (type(ignoremask) == "array") {
-            foreach (mask in ignoremask) {
-                if (mask == ignoremask) {
+        if (type(ignoreEnt) == "array") {
+            foreach (mask in ignoreEnt) {
+                if (mask == ignoreEnt) {
                     return false;
                 }
             }
-        } else if (ignoremask && ent == ignoremask) {
+        } else if (ignoreEnt && ent == ignoreEnt) {
             return false;
         }
 
@@ -152,18 +186,18 @@ class bboxcast {
 
     function _checkSettings(settings) {
         // Check if settings is already in the correct format
-        if (settings.length() == 3)
+        if (settings.len() == 3)
             return settings
         
         // Check and assign default values if missing
         if (!("ignoreClass" in settings)) {
-            settings["ignoreClass"] = ::defaulSettings["ignoreClass"]
+            settings["ignoreClass"] <- ::defaulSettings["ignoreClass"]
         }
         if (!("priorityClass" in settings)) {
-            settings["priorityClass"] = ::defaulSettings["priorityClass"]
+            settings["priorityClass"] <- ::defaulSettings["priorityClass"]
         }   
         if (!("ErrorCoefficient" in settings)) {
-            settings["ErrorCoefficient"] = ::defaulSettings["ErrorCoefficient"]
+            settings["ErrorCoefficient"] <- ::defaulSettings["ErrorCoefficient"]
         }
 
         return settings
@@ -171,7 +205,7 @@ class bboxcast {
 
     // Convert the bboxcast object to string representation
     function _tostring() {
-        return "Bboxcast | \nstartpos: " + startpos + ", \nendpos: " + endpos + ", \nhitpos: " + traceResult[0] + ", \nent: " + traceResult[1] + "\n========================================================="
+        return "Bboxcast | \nstartpos: " + startpos + ", \nendpos: " + endpos + ", \nhitpos: " + hitpos + ", \nent: " + hitent + "\n========================================================="
     }
 }
 
@@ -197,6 +231,24 @@ function CorrectEnable() {
         caller.SetSize(BBox.min, BBox.max)
     }
 }
+
+if(!Entities.FindByName(null, "eyeControl")) {
+    // Creating and Configuring Entities for Eye Management
+    ::eyeControlEntity <- Entities.CreateByClassname( "logic_measure_movement" )
+    ::eyeControlEntity.__KeyValueFromString("targetname", "eyeControl")
+    ::eyeControlEntity.__KeyValueFromInt("measuretype", 1)
+    ::eyeControlEntity.__KeyValueFromString("Targetname", "eyeControl");
+    ::eyeControlEntity.__KeyValueFromString("TargetReference", "eyeControl");
+    ::eyeControlEntity.__KeyValueFromString("MeasureReference", "eyeControl");
+
+    ::eyePointEntity <- Entities.CreateByClassname( "info_target" )
+    ::eyePointEntity.__KeyValueFromString("targetname", "eyePoint")
+
+    // Establishing links between entities and launching functionality
+    EntFireByHandle(::eyeControlEntity, "SetMeasureTarget", "!player", 0, null, null);
+    EntFireByHandle(::eyeControlEntity, "SetTarget", "eyePoint", 0, null, null);
+    EntFireByHandle(::eyeControlEntity, "Enable", "", 0, null, null);
+}   
 
 
 printl("===================================\nbboxcast successfully initialized\nAuthor: laVashik\nGitHub: https://github.com/IaVashik\nVersion: " + Version + "\n===================================")

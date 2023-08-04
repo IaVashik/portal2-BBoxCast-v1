@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "9672"
-	"mapversion" "28"
+	"mapversion" "30"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "28"
+	"mapversion" "30"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -945,7 +945,7 @@ entity
 	"id" "175"
 	"classname" "trigger_portal_cleanser"
 	"origin" "-272.5 124.5 -95.75"
-	"spawnflags" "9"
+	"spawnflags" "1"
 	"StartDisabled" "0"
 	"targetname" "@exit_elevator_cleanser"
 	"UseScanline" "1"
@@ -1391,7 +1391,7 @@ entity
 	"Group01" "EndPos"
 	"Group02" "HitPos"
 	"targetname" "bboxcast"
-	"vscripts" "portal2-BBoxCast/example.nut"
+	"vscripts" "portal2-BBoxCast/Examples/example.nut"
 	"origin" "-349 248 21"
 	editor
 	{
