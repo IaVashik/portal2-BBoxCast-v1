@@ -35,7 +35,7 @@ To use the BBoxCast library in your VScript:
 2. Create an instance of the `bboxcast` class by providing the following parameters:
    - `startpos`: the starting position of the ray.
    - `endpos`: the ending position of the ray.
-   - `ignoremask` (optional): an array of entities to be ignored during tracing.
+   - `ignoremask` (optional): an entity or array of entities to be ignored during tracing.
    - `settings` (optional): custom settings for the trace, if any.
 3. Utilize the available methods of the `bboxcast` instance to retrieve trace information:
    - `GetStartPos()`: returns the starting position of the ray.
@@ -48,7 +48,7 @@ To use the BBoxCast library in your VScript:
    - `GetFraction()`: returns the fraction of the ray's path that was traversed before hitting an entity.
    - `GetImpactNormal()`: experimental function that calculates and returns the surface normal at the intersection point. (may work incorrectly with entities)
 4. Remember to correctly disable objects using the following steps:
-   - Use the `CorrectDisable()` function to set the size of the entity to (0, 0, 0) and disable it.
+   - Use the `CorrectDisable()` function to set the bbox of the entity to (0, 0, 0) and disable it.
    - To re-enable a previously disabled entity, use the `CorrectEnable()` function to restore its original size 
 
 <div align="center">
