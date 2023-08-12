@@ -25,12 +25,12 @@
     4. Alternatively, you can directly modify the bboxcast class to suit your specific needs.
 */
 
-local Version = "1.2.5"
+local Version = "1.2.8"
 ::defaulSettings <- {
     ignoreClass = ["info_target", "viewmodel", "weapon_", "func_illusionary", "info_particle_system",
     "trigger_", "phys_", "env_sprite", "point_", "vgui", "physicsclonearea", "env_beam", "func_breakable"],
     priorityClass = [],
-    ErrorCoefficient = 1000 
+    ErrorCoefficient = 1500 
 }
 
 // A class for performing bbox-based ray tracing in Portal 2
@@ -39,6 +39,7 @@ class bboxcast {
     endpos = null;
     hitpos = null;
     hitent = null;
+    surfaceNormal = null;
     ignoreEnt = null;
     traceSettings = null;
 
@@ -47,7 +48,9 @@ class bboxcast {
         this.endpos = endpos;
         this.ignoreEnt = ignoreEnt
         this.traceSettings = _checkSettings(settings)
-        this.Trace(startpos, endpos, ignoreEnt)
+        local result = this.Trace(startpos, endpos, ignoreEnt)
+        this.hitpos = result.hit
+        this.hitent = result.ent
     }
 
     // Get the starting position of the ray
@@ -70,6 +73,10 @@ class bboxcast {
         return hitent
     }
 
+        function GetIngoreEntities() {
+            return ignoreEnt
+        }
+
     // Check if the ray hit any object or entity
     function DidHit() {
         return GetFraction() != 1
@@ -85,15 +92,50 @@ class bboxcast {
         return _GetDist(startpos, hitpos) / _GetDist(startpos, endpos)
     }
 
-    // Internal function
-    function FastTraceEnd(startpos,endpos) {
-        return startpos + (endpos - startpos) * (TraceLine(startpos, endpos, null))
+    // Experimental function
+    function GetImpactNormal() { 
+        // If the surface normal is already calculated, return it
+        if(surfaceNormal)
+            return surfaceNormal
+            
+        local intersectionPoint = hitpos
+
+        // Set the deviation value for the trace
+        local deviation = 1; 
+
+        // Calculate the normalized direction vector from startpos to hitpos
+        local dir = (hitpos - startpos)
+        dir.Norm()
+
+        // Calculate offset vectors perpendicular to the trace direction
+        local offset1 = Vector(0, 0, deviation)
+        local offset2 = dir.Cross( offset1 )
+
+        // Calculate new start positions for two additional traces
+        local newStart1 = startpos + offset1
+        local newStart2 = startpos + offset2
+
+        // Perform two additional traces to find intersection points
+        // local intersectionPoint1 = _TraceEnd(newStart1, newStart1 + (hitpos - startpos)) // Cheap method
+        // local intersectionPoint2 = _TraceEnd(newStart2, newStart2 + (hitpos - startpos))
+        local intersectionPoint1 = Trace(newStart1, newStart1 + dir * 8000, ignoreEnt).hit
+        local intersectionPoint2 = Trace(newStart2, newStart2 + dir * 8000, ignoreEnt).hit
+
+        // Calculate two edge vectors from intersection point to hitpos
+        local edge1 = intersectionPoint - intersectionPoint1;
+        local edge2 = intersectionPoint - intersectionPoint2;
+
+        // Calculate the cross product of the two edges to find the normal vector
+        surfaceNormal = edge1.Cross(edge2)
+        surfaceNormal.Norm()
+
+        return surfaceNormal
     }
 
     // Perform the main trace by iterating through steps and checking for entities
     function Trace(startpos, endpos, ignoreEnt) {
         // Get the hit position from the fast trace
-        local hitpos = FastTraceEnd(startpos, endpos)
+        local hitpos = _TraceEnd(startpos, endpos)
         // Calculate the distance between start and hit positions
         local dist = hitpos - startpos
         // Calculate a distance coefficient for more precise tracing based on distance and error coefficient
@@ -107,16 +149,13 @@ class bboxcast {
             local Ray_part = startpos + dist * (i / step)
             // Find the entity at the ray point
             for (local ent;ent = Entities.FindByClassnameWithin(ent, "*", Ray_part, 5 * dist_coeff);) {
-                if (_checkEntityIsIgnored(ent,ignoreEnt) && ent) {
-                    this.hitpos = Ray_part
-                    this.hitent = ent
-                    return
+                if (_checkEntityIsIgnored(ent, ignoreEnt) && ent) {
+                    return {hit = Ray_part, ent = ent}
                 }
             }
         }
 
-        this.hitpos = hitpos
-        this.hitent = null
+        return {hit = hitpos, ent = null}
     }
 
     // Perform a bboxcast trace from the player's eyes
@@ -168,7 +207,7 @@ class bboxcast {
 
         if (type(ignoreEnt) == "array") {
             foreach (mask in ignoreEnt) {
-                if (mask == ignoreEnt) {
+                if (mask == ent) {
                     return false;
                 }
             }
@@ -182,6 +221,11 @@ class bboxcast {
     // Calculate the distance between two points
     function _GetDist(start, end) {
         return (start - end).Length()
+    }
+
+    // Internal function
+    function _TraceEnd(startpos,endpos) {
+        return startpos + (endpos - startpos) * (TraceLine(startpos, endpos, null))
     }
 
     function _checkSettings(settings) {

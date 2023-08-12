@@ -40,11 +40,13 @@ To use the BBoxCast library in your VScript:
 3. Utilize the available methods of the `bboxcast` instance to retrieve trace information:
    - `GetStartPos()`: returns the starting position of the ray.
    - `GetEndPos()`: returns the ending position of the ray.
+   - `GetIngoreEntities()`: returns the array of ignore entities passed in `ignoreEntities` parameter when creating the `bboxcast` instance.
    - `GetHitpos()`: returns the position where the ray hit an entity.
    - `GetEntity()`: returns the entity that was hit by the ray.
    - `DidHit()`: checks if the ray hit any object or entity.
    - `DidHitWorld()`: checks if the ray hit the world (no entity).
    - `GetFraction()`: returns the fraction of the ray's path that was traversed before hitting an entity.
+   - `GetImpactNormal()`: experimental function that calculates and returns the surface normal at the intersection point. (may work incorrectly with entities)
 4. Remember to correctly disable objects using the following steps:
    - Use the `CorrectDisable()` function to set the size of the entity to (0, 0, 0) and disable it.
    - To re-enable a previously disabled entity, use the `CorrectEnable()` function to restore its original size 
@@ -72,7 +74,7 @@ For more information, see [playerTraceExample.nut](Examples/playerTraceExample.n
 ## Roadmap
 
 These are the planned improvements for the bboxcast library:
-- [ ] Addition of a function to retrieve surface normals.
+- [X] Addition of a function to retrieve surface normals.
 - [ ] Calculation of angle of incidence for ray collisions.
 - [ ] Support for `prop_portal` and `linked_portal_door`.
 
