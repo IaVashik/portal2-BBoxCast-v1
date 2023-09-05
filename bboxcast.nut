@@ -25,7 +25,7 @@
     4. Alternatively, you can directly modify the bboxcast class to suit your specific needs.
 */
 
-local Version = "1.2.8"
+Version <- "1.3.0"
 ::defaulSettings <- {
     ignoreClass = ["info_target", "viewmodel", "weapon_", "func_illusionary", "info_particle_system",
     "trigger_", "phys_", "env_sprite", "point_", "vgui", "physicsclonearea", "env_beam", "func_breakable"],
@@ -276,23 +276,26 @@ function CorrectEnable() {
     }
 }
 
-if(!Entities.FindByName(null, "eyeControl")) {
-    // Creating and Configuring Entities for Eye Management
-    ::eyeControlEntity <- Entities.CreateByClassname( "logic_measure_movement" )
-    ::eyeControlEntity.__KeyValueFromString("targetname", "eyeControl")
-    ::eyeControlEntity.__KeyValueFromInt("measuretype", 1)
-    ::eyeControlEntity.__KeyValueFromString("Targetname", "eyeControl");
-    ::eyeControlEntity.__KeyValueFromString("TargetReference", "eyeControl");
-    ::eyeControlEntity.__KeyValueFromString("MeasureReference", "eyeControl");
+function Init() {
+    if(!Entities.FindByName(null, "eyeControl")) {
+        // Creating and Configuring Entities for Eye Management
+        ::eyeControlEntity <- Entities.CreateByClassname( "logic_measure_movement" )
+        ::eyeControlEntity.__KeyValueFromString("targetname", "eyeControl")
+        ::eyeControlEntity.__KeyValueFromInt("measuretype", 1)
 
-    ::eyePointEntity <- Entities.CreateByClassname( "info_target" )
-    ::eyePointEntity.__KeyValueFromString("targetname", "eyePoint")
+        ::eyePointEntity <- Entities.CreateByClassname( "info_target" )
+        ::eyePointEntity.__KeyValueFromString("targetname", "eyePoint")
+        
+        // Establishing links between entities and launching functionality
+        EntFire("eyeControl","setmeasuretarget", "!player");
+        EntFire("eyeControl","setmeasurereference", "eyeControl");
+        EntFire("eyeControl","SetTargetReference", "eyeControl");
+        EntFire("eyeControl","Settarget", "eyePoint");
+        EntFire("eyeControl","Enable")
+    }   
+    
+    printl("===================================\nbboxcast successfully initialized\nAuthor: laVashik\n" +
+        "GitHub: https://github.com/IaVashik\nVersion: " + Version + "\n===================================")
+}
 
-    // Establishing links between entities and launching functionality
-    EntFireByHandle(::eyeControlEntity, "SetMeasureTarget", "!player", 0, null, null);
-    EntFireByHandle(::eyeControlEntity, "SetTarget", "eyePoint", 0, null, null);
-    EntFireByHandle(::eyeControlEntity, "Enable", "", 0, null, null);
-}   
-
-
-printl("===================================\nbboxcast successfully initialized\nAuthor: laVashik\nGitHub: https://github.com/IaVashik\nVersion: " + Version + "\n===================================")
+Init()
