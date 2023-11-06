@@ -97,39 +97,50 @@ class bboxcast {
         // If the surface normal is already calculated, return it
         if(surfaceNormal)
             return surfaceNormal
-            
-        local intersectionPoint = hitpos
 
-        // Set the deviation value for the trace
-        local deviation = 1; 
+        local intersectionPoint = this.hitpos
 
         // Calculate the normalized direction vector from startpos to hitpos
-        local dir = (hitpos - startpos)
+        local dir = (this.hitpos - this.startpos)
         dir.Norm()
 
         // Calculate offset vectors perpendicular to the trace direction
-        local offset1 = Vector(0, 0, deviation)
-        local offset2 = dir.Cross( offset1 )
+        local perpDir = Vector(-dir.y, dir.x, 0)
+        local offset1 = perpDir
+        local offset2 = dir.Cross(offset1)
 
         // Calculate new start positions for two additional traces
-        local newStart1 = startpos + offset1
-        local newStart2 = startpos + offset2
+        local newStart1 = this.startpos + offset1
+        local newStart2 = this.startpos + offset2
 
         // Perform two additional traces to find intersection points
-        // local intersectionPoint1 = _TraceEnd(newStart1, newStart1 + (hitpos - startpos)) // Cheap method
-        // local intersectionPoint2 = _TraceEnd(newStart2, newStart2 + (hitpos - startpos))
-        local intersectionPoint1 = Trace(newStart1, newStart1 + dir * 8000, ignoreEnt).hit
-        local intersectionPoint2 = Trace(newStart2, newStart2 + dir * 8000, ignoreEnt).hit
+        local intersectionPoint1
+        local intersectionPoint2
+        if(this.GetEntity()) {
+            local normalSetting = {
+                ignoreClass = ["*"],
+                priorityClass = [this.GetEntity().GetClassname()],
+                ErrorCoefficient = 3000,
+            }
+            // uuugh...
+            intersectionPoint1 = bboxcast(newStart1, newStart1 + dir * 8000, this.ignoreEnt, normalSetting).GetHitpos()
+            intersectionPoint2 = bboxcast(newStart2, newStart2 + dir * 8000, this.ignoreEnt, normalSetting).GetHitpos()
+        }
+        else {
+            intersectionPoint1 = _TraceEnd(newStart1, newStart1 + dir * 8000)
+            intersectionPoint2 = _TraceEnd(newStart2, newStart2 + dir * 8000)
+        }
 
         // Calculate two edge vectors from intersection point to hitpos
-        local edge1 = intersectionPoint - intersectionPoint1;
-        local edge2 = intersectionPoint - intersectionPoint2;
+        local edge1 = intersectionPoint1 - intersectionPoint;
+        local edge2 = intersectionPoint2 - intersectionPoint;
 
         // Calculate the cross product of the two edges to find the normal vector
-        surfaceNormal = edge1.Cross(edge2)
-        surfaceNormal.Norm()
+        local normal = edge2.Cross(edge1)
+        normal.Norm()
+        this.surfaceNormal = normal
 
-        return surfaceNormal
+        return this.surfaceNormal
     }
 
     // Perform the main trace by iterating through steps and checking for entities
