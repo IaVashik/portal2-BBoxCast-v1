@@ -6,6 +6,10 @@
 </h2>
 </div>
 
+> [!WARNING]  
+> The current and improved version is here: [PCapture-Lib](https://github.com/IaVashik/PCapture-LIB)
+
+
 <!-- # BBoxCast - VScripts Library for BBox-based Ray Tracing in Portal 2 -->
 
 BBoxCast is a VScripts library for performing BBox-based ray tracing in Portal 2. It allows rays to hit entities by using their bounding boxes (BBox), unlike the regular `traceline()` function that only hits world geometry and ignores entities. This library provides enhanced TraceLine capabilities for custom gameplay mechanics, or any vscripts involving ray-based interactions in the Portal 2 environment.
